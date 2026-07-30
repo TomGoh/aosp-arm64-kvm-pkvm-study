@@ -1,0 +1,7 @@
+# Tags and editor indexes are local, reproducible artifacts.
+tags
+TAGS
+cscope.*
+.cache/
+.clangd/
+.vscode/

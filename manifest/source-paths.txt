@@ -1,0 +1,70 @@
+# AOSP kernel paths retained in this study repository.
+# One path per line. Directories are copied recursively by git archive.
+
+# Top-level build metadata and licensing
+COPYING
+CREDITS
+Kbuild
+Kconfig
+MAINTAINERS
+Makefile
+LICENSES
+
+# arm64 architecture, exception/boot code, EL2 and KVM/pKVM
+arch/arm64/Kbuild
+arch/arm64/Kconfig
+arch/arm64/Kconfig.debug
+arch/arm64/Makefile
+arch/arm64/include
+arch/arm64/kernel
+arch/arm64/kvm
+arch/arm64/lib
+arch/arm64/mm
+arch/arm64/tools
+
+# Generic KVM and the kernel subsystems it depends on conceptually
+virt/kvm
+include
+mm
+kernel
+lib
+
+# Device assignment, IOMMU, FF-A and the physical GIC side of virtual IRQs
+drivers/iommu
+drivers/vfio
+drivers/firmware/arm_ffa
+drivers/irqchip/Kconfig
+drivers/irqchip/Makefile
+drivers/irqchip/irq-gic-common.c
+drivers/irqchip/irq-gic-common.h
+drivers/irqchip/irq-gic-pm.c
+drivers/irqchip/irq-gic-realview.c
+drivers/irqchip/irq-gic-v2m.c
+drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c
+drivers/irqchip/irq-gic-v3-its-pci-msi.c
+drivers/irqchip/irq-gic-v3-its-platform-msi.c
+drivers/irqchip/irq-gic-v3-its.c
+drivers/irqchip/irq-gic-v3-mbi.c
+drivers/irqchip/irq-gic-v3.c
+drivers/irqchip/irq-gic-v4.c
+drivers/irqchip/irq-gic.c
+
+# File-descriptor/ioctl plumbing used by /dev/kvm, eventfd and irqfd
+fs/anon_inodes.c
+fs/eventfd.c
+fs/ioctl.c
+
+# Upstream documentation relevant to KVM, memory and kernel concurrency
+Documentation/arch/arm64
+Documentation/core-api
+Documentation/locking
+Documentation/mm
+Documentation/RCU
+Documentation/virt/kvm
+
+# Executable examples for KVM and virtual-memory behaviour
+tools/testing/selftests/kvm
+tools/testing/selftests/mm
+tools/testing/selftests/kselftest.h
+tools/testing/selftests/lib.mk
+tools/testing/selftests/kselftest/runner.sh

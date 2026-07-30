@@ -1,0 +1,6 @@
+AOSP_REMOTE=https://android.googlesource.com/kernel/common
+AOSP_REF=aosp/android15-6.6
+AOSP_COMMIT=9f24219bc984bd97d696773f1a6045e9b49bbee3
+AOSP_COMMIT_DATE=2026-07-29
+KERNEL_VERSION=6.6.142
+AOSP_SUBJECT=ANDROID: GKI: update symbol list for galaxy
