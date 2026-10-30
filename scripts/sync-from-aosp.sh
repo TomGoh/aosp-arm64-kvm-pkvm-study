@@ -37,8 +37,23 @@ if [[ "$source_tree" == "$destination" ]]; then
 	exit 1
 fi
 
+# include/uapi/linux/netfilter* has headers that differ only in case
+# (xt_MARK.h/xt_mark.h); a case-insensitive filesystem would merge them.
+probe="$destination/.case-probe.$$"
+: >"$probe"
+if [[ -e "$destination/.CASE-PROBE.$$" ]]; then
+	rm -f -- "$probe"
+	echo "refusing to extract onto a case-insensitive filesystem: $destination" >&2
+	echo "use a case-sensitive volume (e.g. APFS (Case-sensitive) on macOS)" >&2
+	exit 1
+fi
+rm -f -- "$probe"
+
 commit=$(git -C "$source_tree" rev-parse --verify "$ref^{commit}")
-mapfile -t source_paths < <(sed -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' "$manifest")
+source_paths=()
+while IFS= read -r path; do
+	source_paths+=("$path")
+done < <(sed -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' "$manifest")
 
 for path in "${source_paths[@]}"; do
 	if ! git -C "$source_tree" cat-file -e "$commit:$path"; then
@@ -66,3 +81,15 @@ remote=$(git -C "$source_tree" remote get-url aosp 2>/dev/null || true)
 } >"$destination/SOURCE.lock"
 
 printf 'Synced %s (%s) into %s\n' "$commit" "$version" "$destination"
+
+# Some kernel directories ship a .gitignore that also matches tracked files
+# (tools/testing/selftests/kvm ignores everything, then whitelists sources),
+# so a plain "git add" would silently leave them out of the snapshot.
+if git -C "$destination" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+	ignored=$(git -C "$destination" ls-files --others --ignored --exclude-standard \
+		-- "${source_paths[@]}")
+	if [[ -n "$ignored" ]]; then
+		echo "warning: these source files match a .gitignore; stage them with git add -f:" >&2
+		sed 's/^/  /' <<<"$ignored" >&2
+	fi
+fi

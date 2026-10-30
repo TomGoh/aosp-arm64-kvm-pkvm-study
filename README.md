@@ -55,13 +55,19 @@
 scripts/sync-from-aosp.sh /path/to/kernel/common aosp/android15-6.6
 ```
 
-确认所有被清单管理的源码逐字节等于锁定提交：
+确认所有被清单管理的源码（内容、可执行位和符号链接目标）都等于锁定提交：
 
 ```bash
 scripts/verify-source.sh /path/to/kernel/common
 ```
 
-同步脚本不会删除旧版本已经消失的文件。因此更新版本时，应在干净分支执行同步，然后检查 `git status` 和清单差异；必要时人工删除已经从上游消失的源文件。
+校验只读取源仓库的 git 树对象，不解压文件，因此源仓库用 `--filter=blob:none` 的 blobless 克隆即可。
+
+注意事项：
+
+- 目标目录必须位于大小写敏感的文件系统上。`include/uapi/linux/netfilter*` 下有只差大小写的头文件（如 `xt_MARK.h` 与 `xt_mark.h`），同步脚本在大小写不敏感的卷上会直接拒绝执行。macOS 默认卷不满足要求，可新建 “APFS（区分大小写）” 卷。
+- 内核自带的部分 `.gitignore` 会命中被跟踪的源码（例如 `tools/testing/selftests/kvm/` 先忽略全部再白名单放行），普通 `git add` 会漏掉它们。同步脚本会列出这些文件，请用 `git add -f` 提交。
+- 同步脚本不会删除旧版本已经消失的文件。因此更新版本时，应在干净分支执行同步，再用 `verify-source.sh` 检查：多余、缺失或被修改的文件都会以 diff 形式列出；必要时人工删除已经从上游消失的源文件。
 
 ## 来源和许可证
 
